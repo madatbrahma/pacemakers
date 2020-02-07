@@ -58,15 +58,9 @@ class UserHomePageScreenV2 extends Component {
     componentDidMount() {
 
         var tuesday = moment().startOf('week').add(2, 'days').toDate();
-
         var saturday = moment().endOf('week').toDate();
-
-
         tuesday = moment(tuesday).format('YYYY-MM-DD');
         saturday = moment(saturday).format('YYYY-MM-DD');
-
-        //   console.log('start week startOfWeekFormat: ', tuesday, saturday);
-
 
         var ref = db.ref("weekly-training/schedulesv2");
 
@@ -76,7 +70,9 @@ class UserHomePageScreenV2 extends Component {
         setTimeout(() => {
             ref.orderByKey().startAt(tuesday).endAt(saturday).on('value', (snapshot) => {
 
+                if(snapshot && snapshot.val()){
                 this.populateActivitiSummary(Object.values(snapshot.val()));
+                }
 
             });
 
@@ -88,12 +84,12 @@ class UserHomePageScreenV2 extends Component {
 
     loadDetails(item) {
 
-        console.log('open RunnerDailyActivityDetailsScreen for = ',item);
         this.props.navigation.navigate(
             'RunnerDailyActivityDetailsScreen', {
             runnerData: {
                 'Name': item.name,
-                'desc': item.woSummary
+                'desc': item.woSummary,
+                'date' : item.date
             }
         }
         )

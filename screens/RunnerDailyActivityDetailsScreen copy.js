@@ -78,8 +78,39 @@ class RunnerDailyActivityDetailsScreen extends Component {
                     </TouchableOpacity>
                 </View>
                <View style={styles.otherComments}>
+                   <View>
                     <Comments runner={name} date ={date}/>
+                   </View>
                   
+                   <View style={styles.otherImages}>
+                        <Image style={
+                            {
+                                ...styles.otherImage
+                            }}
+                            source={images['Brojen']}
+                        />
+                        <Image style={{
+                            ...styles.otherImage,
+                            opacity: 0.2
+                        }}
+                            source={images[name]}
+                        />
+
+                        <Image style={{
+                            ...styles.otherImage,
+                            opacity: 0.2
+                        }}
+                            source={images[name]}
+                        />
+                    </View>
+                    <View>
+                        <Text style={styles.text}>Run has been good. Was feeling comfortable.
+                            Cold be better.Run has been good. Was feeling comfortable.
+                            Cold be better.Run has been good. Was feeling comfortable.
+                            Cold be better.Run has been good. Was feeling comfortable.
+                            Cold be better.
+                    </Text>
+                    </View>
                 </View>
             </View>
         );
@@ -130,7 +161,7 @@ const styles = StyleSheet.create({
     },
     otherComments: {
         flex: 1,
-        backgroundColor: 'white',
+        backgroundColor: '#494b4c',
         marginHorizontal: 5,
         paddingHorizontal: 5,
         paddingVertical: 5,

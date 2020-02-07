@@ -1,87 +1,64 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet ,FlatList} from 'react-native';
 import EachDayWorkoutSummary from '../component/EachDayWorkoutSummary';
 import moment from "moment";
 
 import db from '../common/db';
-import { UserDailyActivitySummary } from '../common/UseDailyActivitySummary';
-import DailyActivitySummary from '../component/DailyActivitySummary';
 
-class UserHomePageScreenV2 extends Component {
+class UserHomePageScreen extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
             dataLoaded: false,
-            dailyTrainingLogs: null,
-            weekTranings: []
-
+            dailyTrainingLogs: null
         };
-    }
-    populateActivitiSummary(snapshotVal) {
-        weekTraningsdata = [];
-
-        snapshotVal.map(function (each) {
-            let eachdayEntry = JSON.parse(JSON.stringify(each));
-            // console.log('each day entry is ',eachdayEntry);
-            //  let firstDateArr = Object.values(each);
-            let dateIs = eachdayEntry.date;
-            let dayIs = eachdayEntry.day;
-            let runnersArray = eachdayEntry.runners;
-            let runnersArrayIs = Object.values(runnersArray);
-            // console.log(dateIs, dayIs);
-            //  console.log(JSON.parse(JSON.stringify(runnersArray)) );
-
-            runnersArrayIs.map(function (runner) {
-                let runnerIs = runner.Name;
-                let woDesc = runner.desc;
-                if (runnerIs === 'Tilak') {
-                    let woSumary = new UserDailyActivitySummary(dateIs, dayIs, runnerIs, woDesc);
-                    //    console.log('adding new wo summary',woSumary);
-                    weekTraningsdata.push(woSumary);
-                }
-
-
-
-            });
-
-
-
-
-
-        })
-
-        console.log(weekTraningsdata);
-        this.setState({
-            weekTranings: weekTraningsdata,
-            dataLoaded: true
-        });
-
-
     }
 
     componentDidMount() {
 
+        var startOfWeek = moment().startOf('week').toDate();
+       
+        var endOfWeek = moment().endOf('week').toDate();
+        
 
+        var startOfWeekFormat=  moment(startOfWeek).format('DD-MM-YYYY');
+        var endOfWeekFormat=  moment(endOfWeek).format('DD-MM-YYYY');
+
+       // console.log('start week startOfWeekFormat: ',startOfWeekFormat , endOfWeekFormat);
+      
         var ref = db.ref("weekly-training/schedulesv2");
+       
+       // ref.orderByKey().startAt("02-01-2020").endAt("04-01-2020").ref.child('Tilak').on()
+        
 
-
+     /* ref.orderByKey().startAt("02-01-2020").endAt("04-01-2020").
+        on("child_added", function (snapshot) {
+           console.log(snapshot.val());
+            this.setState({
+                dailyTrainingLogs: snapshot.val(),
+                dataLoaded: true
+            });
+        
+        });*/
 
         setTimeout(() => {
             ref.orderByKey().startAt("02-01-2020").endAt("04-01-2020").on('value', (snapshot) => {
-
-                this.populateActivitiSummary(Object.values(snapshot.val()));
-
+                console.log('got data on ref ',snapshot.val());
+                this.setState({
+                    dailyTrainingLogs: snapshot.val(),
+                    dataLoaded: true
+                })
             });
 
         }, 3000);
 
-
+       
 
     }
 
     loadDetails() {
-
+        
 
         this.props.navigation.navigate(
             'RunnerDailyActivityDetailsScreen', {
@@ -101,11 +78,11 @@ class UserHomePageScreenV2 extends Component {
                 <View style={styles.container}>
 
                     <FlatList
-                        data={this.state.weekTranings}
+                        data={this.state.dailyTrainingLogs}
                         renderItem={
                             ({ item }) => <DailyActivitySummary
-                                name={item.name}
-                                desc={item.woSummary}
+                                name="Tilak"
+                                desc="tilak training"
                                 loadDetails={() => this.loadDetails(item)} />
                         }
                     />
@@ -121,42 +98,42 @@ class UserHomePageScreenV2 extends Component {
             );
         }
     }
-    /** render() {
-         if (this.state.dataLoaded) {
-            console.log('state has val ',this.state.dailyTrainingLogs);
-         }
-         return (
-             <View style={styles.container}>
-                 <View style={styles.userSummary}>
-                     <Text>User Summary</Text>
-                 </View>
-                 <View style={styles.weeklySection}>
- 
-                     <View style={styles.eachDay}>
-                         <EachDayWorkoutSummary day='Tuesday'
-                             date='04 Feb 2020'
-                             woSummary='400 repeats 20 times'
-                             loadDetails={() => this.loadDetails()} />
-                     </View>
- 
- 
-                     <View style={styles.eachDay}>
-                         <EachDayWorkoutSummary day='Thursday'
-                             date='06 Feb 2020'
-                             woSummary='8 Km Tempo'
-                             loadDetails={() => this.loadDetails()} />
-                     </View>
- 
-                     <View style={styles.eachDay}>
-                         <EachDayWorkoutSummary day='Saturday'
-                             date='08 Feb 2020'
-                             woSummary='25 Km Easy run'
-                             loadDetails={() => this.loadDetails()} />
-                     </View>
-                 </View>
-             </View>
-         );
-     }*/
+   /** render() {
+        if (this.state.dataLoaded) {
+           console.log('state has val ',this.state.dailyTrainingLogs);
+        }
+        return (
+            <View style={styles.container}>
+                <View style={styles.userSummary}>
+                    <Text>User Summary</Text>
+                </View>
+                <View style={styles.weeklySection}>
+
+                    <View style={styles.eachDay}>
+                        <EachDayWorkoutSummary day='Tuesday'
+                            date='04 Feb 2020'
+                            woSummary='400 repeats 20 times'
+                            loadDetails={() => this.loadDetails()} />
+                    </View>
+
+
+                    <View style={styles.eachDay}>
+                        <EachDayWorkoutSummary day='Thursday'
+                            date='06 Feb 2020'
+                            woSummary='8 Km Tempo'
+                            loadDetails={() => this.loadDetails()} />
+                    </View>
+
+                    <View style={styles.eachDay}>
+                        <EachDayWorkoutSummary day='Saturday'
+                            date='08 Feb 2020'
+                            woSummary='25 Km Easy run'
+                            loadDetails={() => this.loadDetails()} />
+                    </View>
+                </View>
+            </View>
+        );
+    }*/
 }
 
 const styles = StyleSheet.create({
@@ -184,4 +161,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default UserHomePageScreenV2;
+export default UserHomePageScreen;
