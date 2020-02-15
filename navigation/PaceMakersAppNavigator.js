@@ -5,7 +5,7 @@ import { createStackNavigator } from 'react-navigation-stack';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
 
 import CalendarScreen from '../screens/CalendarScreen';
-import DailyActivitySummaryScreen from '../screens/DailyActivitySummaryScreen';
+import DailyActivitySummaryScreenV2 from '../screens/DailyActivitySummaryScreenV2';
 import RunnerDailyActivityDetailsScreen from '../screens/RunnerDailyActivityDetailsScreen';
 import EventsScreen from '../screens/EventsScreen';
 import  UserHomePageScreenv2 from '../screens/UserHomePageScreenv2';
@@ -14,9 +14,10 @@ import LoginScreen from '../screens/LoginScreen';
 import UnautorizedScreen from '../screens/UnautorizedScreen';
 
 
+
 const PaceMakersAppNavigator = createStackNavigator({
     CalendarScreenNavigation: CalendarScreen,
-    DailyActivitySummaryScreenNavigation: DailyActivitySummaryScreen,
+    DailyActivitySummaryScreenNavigation: DailyActivitySummaryScreenV2,
     RunnerDailyActivityDetailsScreen:RunnerDailyActivityDetailsScreen
 
 });

@@ -60,6 +60,7 @@ class CommentImages extends Component {
                         return (<TouchableOpacity onPress={() => this.imagePressed(y)}>
                             <Image style={this.imageStyle(y)}
                                 source={images[y]}
+                                
                             />
                         </TouchableOpacity>
                         );

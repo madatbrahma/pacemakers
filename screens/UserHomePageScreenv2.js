@@ -1,10 +1,14 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Image } from 'react-native';
 import EachDayWorkoutSummary from '../component/EachDayWorkoutSummary';
+import ImageContainer from '../component/ImageContainer';
 import moment from "moment";
 
 import db from '../common/db';
 import { UserDailyActivitySummary } from '../common/UseDailyActivitySummary';
+import Event from '../component/Event';
+import WeeklySchedule from '../component/WeeklySchedule';
+//import CountdownCircle from 'react-native-countdown-circle';
 
 class UserHomePageScreenV2 extends Component {
 
@@ -13,116 +17,44 @@ class UserHomePageScreenV2 extends Component {
         this.state = {
             dataLoaded: false,
             dailyTrainingLogs: null,
-            weekTranings: []
+            weekTranings: [],
+            imageUrl: 'https://firebasestorage.googleapis.com/v0/b/pacemakers-training.appspot.com/o/profilepics%2Fchandana.png?alt=media&token=7ddc42a7-3ce3-45b1-bf95-41764d4604a0'
 
         };
     }
-    populateActivitiSummary(snapshotVal) {
-        weekTraningsdata = [];
-
-        snapshotVal.map(function (each) {
-            let eachdayEntry = JSON.parse(JSON.stringify(each));
-            // console.log('each day entry is ',eachdayEntry);
-            //  let firstDateArr = Object.values(each);
-            let dateIs = eachdayEntry.date;
-            let dayIs = eachdayEntry.day;
-            let runnersArray = eachdayEntry.runners;
-            let runnersArrayIs = Object.values(runnersArray);
-
-            runnersArrayIs.map(function (runner) {
-                let runnerIs = runner.Name;
-                let woDesc = runner.desc;
-                if (runnerIs === 'Tilak') {
-                    let woSumary = new UserDailyActivitySummary(dateIs, dayIs, runnerIs, woDesc);
-                    weekTraningsdata.push(woSumary);
-                }
 
 
-
-            });
-
-
-
-
-
-        })
-
-        this.setState({
-            weekTranings: weekTraningsdata,
-            dataLoaded: true
-        });
-
-
-    }
-
-    componentDidMount() {
-
-        var tuesday = moment().startOf('week').add(2, 'days').toDate();
-        var saturday = moment().endOf('week').toDate();
-        tuesday = moment(tuesday).format('YYYY-MM-DD');
-        saturday = moment(saturday).format('YYYY-MM-DD');
-
-        var ref = db.ref("weekly-training/schedulesv2");
-
-
-
-
-        setTimeout(() => {
-            ref.orderByKey().startAt(tuesday).endAt(saturday).on('value', (snapshot) => {
-
-                if(snapshot && snapshot.val()){
-                this.populateActivitiSummary(Object.values(snapshot.val()));
-                }
-
-            });
-
-        }, 3000);
-
-
-
-    }
-
-    loadDetails(item) {
-
-        this.props.navigation.navigate(
-            'RunnerDailyActivityDetailsScreen', {
-            runnerData: {
-                'Name': item.name,
-                'desc': item.woSummary,
-                'date' : item.date
-            }
-        }
-        )
-    }
 
     render() {
 
-        if (this.state.dataLoaded) {
-            return (
 
-                <View style={styles.container}>
+        return (
 
-                    <FlatList
-                        data={this.state.weekTranings}
-                        renderItem={
-                            ({ item }) => <EachDayWorkoutSummary
-                                day={item.day}
-                                date={item.date}
-                                woSummary={item.woSummary}
-                                loadDetails={() => this.loadDetails(item)} />
-                        }
-                    />
+            <View style={styles.container}>
+                <View style={styles.userSummary}>
+                    <View>
+                        <ImageContainer userName='tilak' />
+                    </View>
 
                 </View>
-            );
-        } else {
-            return (
-
-                <View>
-                    <Text>Data still loading</Text>
+                <View style={styles.weeklySection}>
+                    <WeeklySchedule />
                 </View>
-            );
-        }
+                <View style={styles.events}>
+                    <Image style={styles.image} source={images['tcs10k']}></Image>
+                    <Image style={styles.image} source={images['adhm']}></Image>
+                    <Image style={styles.image} source={images['tmm']}></Image>
+
+                </View>
+
+
+
+
+            </View>
+
+
+        );
+
     }
 
 }
@@ -130,26 +62,44 @@ class UserHomePageScreenV2 extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        marginVertical: 30
-
+        height: '100%',
+        marginTop: 50,
+        backgroundColor: '#f5f5f5'
+        //  alignContent:'space-between'
     },
+
     userSummary: {
         flex: 1,
-        backgroundColor: '#1C8BA6',
-        marginTop: 20,
+        maxHeight: 100,
+        // marginLeft:10,
+        flexDirection: 'row',
+        justifyContent: 'center'
+        // justifyContent:'space-between'
+        // alignItems:'flex-end'
+        // marginTop: 20,
+        //  alignItems: 'center',
+        //  alignContent:'stretch'
+        //  maxHeight: 150
 
+    },
+    events: {
+        flex: 1,
+        marginVertical: 5,
+        flexDirection: 'row'
     },
     weeklySection: {
-        flex: 3,
+        flex: 4,
+        //  marginTop:200,
         backgroundColor: 'white',
-        justifyContent: 'space-between'
 
     },
-    eachDay: {
+   
+    image: {
+
         flex: 1,
-
-
-
+        width: null,
+        height: null,
+        resizeMode: 'contain'
     }
 });
 

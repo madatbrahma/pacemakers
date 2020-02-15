@@ -1,101 +1,92 @@
 import React, { Component } from 'react';
-import { View, Text, Button,StyleSheet } from 'react-native';
 
-import * as Google from 'expo-google-app-auth';
+import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import images from '../common/Images';
+import db from '../common/db';
+import Comments from '../component/Comments';
 
-import firebase from 'firebase';
+class RunnerDailyActivityDetailsScreen extends Component {
 
-class LoginScreen extends Component {
+    constructor(props) {
+        console.log(' props.navigation.state.runnerData ',props.navigation.state.params.runnerData);
+        super(props);
+        this.state = {
+            runnerdata: props.navigation.state.params.runnerData,
+            newComments: ''
 
-    isUserEqual = (googleUser, firebaseUser)=> {
-        console.log('check if user equal');
-        if (firebaseUser) {
-          var providerData = firebaseUser.providerData;
-          for (var i = 0; i < providerData.length; i++) {
-            if (providerData[i].providerId === firebase.auth.GoogleAuthProvider.PROVIDER_ID &&
-                providerData[i].uid === googleUser.getBasicProfile().getId()) {
-                    console.log('we dont need t reauth');
-              // We don't need to reauth the Firebase connection.
-              return true;
-            }
-          }
-        }
-        console.log('we  need to reauth');
-        return false;
-      }
+        };
+    }
 
-      checkIfMember =(user) =>{
-          return false;
-      }
+    handleNewComment = (comments) => {
+        this.setState({ newComments: comments })
+    }
 
-     onSignIn = (googleUser)=> {
-        console.log('on Sign inGoogle Auth Response', googleUser.user.email);
-        //here if the email is not authorised in pacemakers , navigate to a different screen.
-        // We need to register an Observer on Firebase Auth to make sure auth is initialized.
-         if(!this.checkIfMember(googleUser.user.email)){
-             console.log("you are not a member");
-             this.props.navigation.navigate('UnautorizedScreen');
-             return;
+    /**  saveRunnerActivityData =(item)=>{
+          this.setState({
+              runner: item.name,
+              date: item.date
+          })
+      };*/
 
-        }
-        var unsubscribe = firebase.auth().onAuthStateChanged(function(firebaseUser) {
-          unsubscribe();
-          // Check if we are already signed-in Firebase with the correct user.
-          if (!this.isUserEqual(googleUser, firebaseUser)) {
-            // Build Firebase credential with the Google ID token.
-            var credential = firebase.auth.GoogleAuthProvider.credential(
-                googleUser.idToken,
-                googleUser.accessToken
-                
-                );
-            // Sign in with credential from the Google user.
-            firebase.auth().signInWithCredential(credential).catch(function(error) {
-              // Handle Errors here.
-              var errorCode = error.code;
-              var errorMessage = error.message;
-              // The email of the user's account used.
-              var email = error.email;
-              // The firebase.auth.AuthCredential type that was used.
-              var credential = error.credential;
-              // ...
-            });
-          } else {
-            console.log('User already signed-in Firebase.');
-          }
-        }.bind(this));
-      }
+    saveComments = (comments) => {
+        const runner = this.state.runnerdata.Name;
+        const date = this.state.runnerdata.date;
+      //  console.log('comments to save for ', runner, date);
+        // var ref = db.ref("weekly-training/comments/");
+        var commentsRef = db.ref("/weekly-training/comments/" + date + "/" + runner + "/");
+        commentsRef.child(runner).set({
 
-    signInWithGoogleAsync = async() => {
-        try {
-            const result = await Google.logInAsync({
-                androidClientId: '571552619528-an1csavqd4lcr76ms9f5ggsd6u1jtsl8.apps.googleusercontent.com',
-                //  iosClientId: YOUR_CLIENT_ID_HERE,
-                behavior:'web',
-                scopes: ['profile', 'email'],
-            });
+            "comments": comments
 
-           // console.log('result is ',result.user.email);
-           
-            if (result.type === 'success') {
-               
-                this.onSignIn(result);
-                return result.accessToken;
-            } else {
-                return { cancelled: true };
-            }
-        } catch (e) {
-            return { error: true };
-        }
-    };
+        });
 
+
+    }
     render() {
+        /* 2. Read the params from the navigation state */
+        const { params } = this.props.navigation.state;
+        const runnerData = params ? params.runnerData : null;
+        const name = runnerData.Name;
+        const date = runnerData.date;
         return (
             <View style={styles.container}>
-                <Button
-                    title="Sign In With Google"
-                    onPress={() => {
-                        this.signInWithGoogleAsync()
-                    }} />
+                <View style={styles.imageContainer}>
+                    <Image style={styles.image}
+                        source={images[name]}
+                    />
+
+                    <Text style={styles.text}>{name}</Text>
+                    <Text style={styles.text}>{runnerData.desc}</Text>
+                </View>
+                <TouchableOpacity onPress={this.props.loadDetails}>
+                        <Image
+                            source={images["commentsIcon"]}
+                            style={styles.icon}
+                        />
+                    </TouchableOpacity>
+                <View style={styles.textAreaContainer} >
+                    <TextInput
+                        style={styles.textArea}
+                        underlineColorAndroid="transparent"
+                        placeholder="Type something"
+                        placeholderTextColor="grey"
+                        numberOfLines={10}
+                        multiline={true}
+                        onChangeText={this.handleNewComment}
+
+                    />
+                    <TouchableOpacity
+                        style={styles.submitButton}
+                        onPress={
+                            () => this.saveComments(this.state.newComments)
+                        }>
+                        <Text style={styles.submitButtonText}>Save</Text>
+                    </TouchableOpacity>
+                </View>
+               <View style={styles.otherComments}>
+                    <Comments runner={name} date ={date}/>
+                  
+                </View>
             </View>
         );
     }
@@ -104,10 +95,90 @@ class LoginScreen extends Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-})
+        // backgroundColor: '#353839',
 
-export default LoginScreen;
+    },
+    imageContainer: {
+        marginTop: 10,
+        flex: 1,
+        maxHeight: 120,
+        alignItems: 'center'
+
+
+    },
+    image: {
+        height: 80,
+        width: 80
+    },
+    myComments: {
+        flex: 1,
+        backgroundColor: '#494b4c',
+        marginHorizontal: 5,
+        paddingHorizontal: 5,
+        paddingVertical: 5,
+        alignItems: 'center',
+        borderRadius: 10
+
+    },
+    otherImages: {
+        flexDirection: 'row',
+        justifyContent: 'center'
+
+
+    },
+    otherImage: {
+        height: 40,
+        width: 40,
+        marginHorizontal: 5,
+        marginBottom: 20,
+        borderRadius: 20
+
+    },
+    icon: {
+        height: 25,
+        width: 25,
+        marginLeft: 200,
+        marginTop: 15
+    },
+    otherComments: {
+        flex: 1,
+        backgroundColor: 'white',
+        marginHorizontal: 5,
+        paddingHorizontal: 5,
+        paddingVertical: 5,
+
+        borderRadius: 10
+    },
+    text: {
+        color: 'black'
+    },
+    textAreaContainer: {
+        flex: 1,
+        borderColor: 'black',
+        borderWidth: 1,
+        marginTop: 2,
+        borderRadius: 10,
+        margin: 5
+    },
+    textArea: {
+        height: 100,
+        justifyContent: "flex-start"
+    },
+    submitButton: {
+        backgroundColor: '#D8B894',
+        padding: 10,
+        margin: 15,
+        height: 40,
+        maxWidth: 60,
+        marginLeft: 300,
+        borderRadius: 8
+
+
+    },
+    submitButtonText: {
+        color: 'white'
+    }
+
+});
+
+export default RunnerDailyActivityDetailsScreen;

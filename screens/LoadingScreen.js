@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, ActivityIndicator,StyleSheet } from 'react-native';
 import firebase from 'firebase';
-import db from '../common/db';
+import {LoggedUser} from '../common/LoggedUser';
 
 class LoadingScreen extends Component {
 
@@ -11,11 +11,12 @@ class LoadingScreen extends Component {
 
    
     checkLoggedIn = () => {
-        console.log('cehck if user logged in');
+      //  console.log('cehck if user logged in');
 
         firebase.auth().onAuthStateChanged((user) => {
          //   console.log('is user logged ',user.email);
             if (user) {
+                LoggedUser.setUser('Madat');
                 this.props.navigation.navigate('LoggedInHome');
             } else {
                 this.props.navigation.navigate('LoginScreen');

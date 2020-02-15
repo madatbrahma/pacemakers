@@ -51,7 +51,12 @@ class Comments extends Component {
     }
 
     componentDidMount() {
-        console.log('get comments for ', this.state.date, this.state.runner);
+        this.getCommentsFromDb();
+       
+    }
+
+    getCommentsFromDb() {
+        console.log(' in comments component get comments for ', this.state.date, this.state.runner);
         let date = '2020-01-30';
         let runner = 'Tilak';
         var commentsRef = db.ref("/weekly-training/comments/" + date + "/" + runner + "/");
@@ -66,13 +71,26 @@ class Comments extends Component {
             });
 
         }, 3000);
+
+    }
+
+    componentWillReceiveProps(props){
+        if(props.reRenderComments){
+            console.log('reRender comments again');
+            this.getCommentsFromDb();
+        }
+        this.setState({
+            dataLoaded: false
+        });
+       
+       
     }
 
 
     getCommentof = () => {
-        console.log('getting comments of ', this.state.runnerInFocus);
-        let comment = "dummy comment";
-        console.log('all comments are ',this.state.allcomments);
+     //   console.log('getting comments of ', this.state.runnerInFocus);
+        let comment = '';
+      //  console.log('all comments are ',this.state.allcomments);
 
         this.state.allcomments.map((each)=>{
             if (each.commentBy === this.state.runnerInFocus) {
@@ -84,7 +102,7 @@ class Comments extends Component {
     }
 
     setNewRunnerInFocus = (runnerInFocus) => {
-        console.log('calling setNewRunnerInFocus for ',runnerInFocus);
+      //  console.log('calling setNewRunnerInFocus for ',runnerInFocus);
         this.setState({
             runnerInFocus: runnerInFocus
         });

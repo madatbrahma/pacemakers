@@ -1,18 +1,22 @@
 import React, { Component } from 'react';
 
-import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet, Button, TextInput, TouchableOpacity } from 'react-native';
 import images from '../common/Images';
 import db from '../common/db';
 import Comments from '../component/Comments';
+import { LoggedUser } from '../common/LoggedUser';
+import Dialog, { DialogContent, DialogFooter, DialogButton } from 'react-native-popup-dialog';
 
 class RunnerDailyActivityDetailsScreen extends Component {
 
     constructor(props) {
-        console.log(' props.navigation.state.runnerData ',props.navigation.state.params.runnerData);
+        console.log(' props.navigation.state.runnerData ', props.navigation.state.params.runnerData);
         super(props);
         this.state = {
             runnerdata: props.navigation.state.params.runnerData,
-            newComments: ''
+            newComments: '',
+            visible: false,
+            reRenderComments: false
 
         };
     }
@@ -21,23 +25,28 @@ class RunnerDailyActivityDetailsScreen extends Component {
         this.setState({ newComments: comments })
     }
 
-    /**  saveRunnerActivityData =(item)=>{
-          this.setState({
-              runner: item.name,
-              date: item.date
-          })
-      };*/
 
-    saveComments = (comments) => {
-        const runner = this.state.runnerdata.Name;
+
+    saveComments = () => {
+        console.log('saveComments is called with comments ', this.state.newComments);
+        console.log('logged user2 is', LoggedUser.getUser());
+        const commentFor = this.state.runnerdata.Name;
+        const commentBy = LoggedUser.getUser();
         const date = this.state.runnerdata.date;
-        console.log('comments to save for ', runner, date);
+        //  console.log('comments to save for ', runner, date);
         // var ref = db.ref("weekly-training/comments/");
-        var commentsRef = db.ref("/weekly-training/comments/" + date + "/" + runner + "/");
-        commentsRef.child(runner).set({
+        var commentsRef = db.ref("/weekly-training/comments/" + '2020-01-30' + "/" + commentFor + "/");
+        commentsRef.child(commentBy).set({
 
-            "comments": comments
 
+            'commentBy': commentBy,
+            'comments': this.state.newComments
+
+
+        });
+        this.setState({
+            visible: false,
+            reRenderComments: true
         });
 
 
@@ -58,28 +67,61 @@ class RunnerDailyActivityDetailsScreen extends Component {
                     <Text style={styles.text}>{name}</Text>
                     <Text style={styles.text}>{runnerData.desc}</Text>
                 </View>
-                <View style={styles.textAreaContainer} >
-                    <TextInput
-                        style={styles.textArea}
-                        underlineColorAndroid="transparent"
-                        placeholder="Type something"
-                        placeholderTextColor="grey"
-                        numberOfLines={10}
-                        multiline={true}
-                        onChangeText={this.handleNewComment}
 
+
+
+
+                <TouchableOpacity onPress={() => this.setState({ visible: true })}>
+                    <Image
+                        source={images["commentsIcon"]}
+                        style={styles.icon}
                     />
-                    <TouchableOpacity
-                        style={styles.submitButton}
-                        onPress={
-                            () => this.saveComments(this.state.newComments)
-                        }>
-                        <Text style={styles.submitButtonText}>Save</Text>
-                    </TouchableOpacity>
-                </View>
-               <View style={styles.otherComments}>
-                    <Comments runner={name} date ={date}/>
-                  
+                </TouchableOpacity>
+                <Dialog
+                    width={400}
+                    //height={200}
+
+                    visible={this.state.visible}
+                    onTouchOutside={() => {
+                        this.setState({ visible: false });
+                    }}
+                    footer={
+                        <DialogFooter>
+                            <DialogButton
+                                text="OK"
+                                onPress={() => {
+                                    console.log('OK is pressed')
+                                    this.saveComments();
+
+                                }
+                                }
+                            />
+
+                        </DialogFooter>
+                    }
+                >
+
+                    <DialogContent>
+                        <TextInput
+
+                            underlineColorAndroid="transparent"
+                            placeholder="comments..."
+                            placeholderTextColor="grey"
+                            numberOfLines={10}
+                            multiline={true}
+                            onChangeText={this.handleNewComment}
+
+                        />
+                    </DialogContent>
+
+                </Dialog>
+
+
+
+
+                <View style={styles.otherComments}>
+                    <Comments runner={name} date={date} reRenderComments={this.state.reRenderComments}/>
+
                 </View>
             </View>
         );
@@ -95,7 +137,7 @@ const styles = StyleSheet.create({
     imageContainer: {
         marginTop: 10,
         flex: 1,
-        maxHeight: 120,
+        maxHeight: 100,
         alignItems: 'center'
 
 
@@ -128,6 +170,12 @@ const styles = StyleSheet.create({
         borderRadius: 20
 
     },
+    icon: {
+        height: 25,
+        width: 25,
+        marginLeft: 200,
+        marginTop: 15
+    },
     otherComments: {
         flex: 1,
         backgroundColor: 'white',
@@ -140,32 +188,6 @@ const styles = StyleSheet.create({
     text: {
         color: 'black'
     },
-    textAreaContainer: {
-        flex: 1,
-        borderColor: 'black',
-        borderWidth: 1,
-        marginTop: 2,
-        borderRadius: 10,
-        margin: 5
-    },
-    textArea: {
-        height: 100,
-        justifyContent: "flex-start"
-    },
-    submitButton: {
-        backgroundColor: '#D8B894',
-        padding: 10,
-        margin: 15,
-        height: 40,
-        maxWidth: 60,
-        marginLeft: 300,
-        borderRadius: 8
-
-
-    },
-    submitButtonText: {
-        color: 'white'
-    }
 
 });
 
