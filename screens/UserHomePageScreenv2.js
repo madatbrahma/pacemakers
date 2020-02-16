@@ -8,6 +8,8 @@ import db from '../common/db';
 import { UserDailyActivitySummary } from '../common/UseDailyActivitySummary';
 import Event from '../component/Event';
 import WeeklySchedule from '../component/WeeklySchedule';
+import {LoggedUser} from '../common/LoggedUser';
+
 //import CountdownCircle from 'react-native-countdown-circle';
 
 class UserHomePageScreenV2 extends Component {
@@ -18,7 +20,6 @@ class UserHomePageScreenV2 extends Component {
             dataLoaded: false,
             dailyTrainingLogs: null,
             weekTranings: [],
-            imageUrl: 'https://firebasestorage.googleapis.com/v0/b/pacemakers-training.appspot.com/o/profilepics%2Fchandana.png?alt=media&token=7ddc42a7-3ce3-45b1-bf95-41764d4604a0'
 
         };
     }
@@ -33,7 +34,7 @@ class UserHomePageScreenV2 extends Component {
             <View style={styles.container}>
                 <View style={styles.userSummary}>
                     <View>
-                        <ImageContainer userName='tilak' />
+                        <ImageContainer userName={LoggedUser.getUser()} />
                     </View>
 
                 </View>

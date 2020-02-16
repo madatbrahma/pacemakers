@@ -3,6 +3,7 @@ import { Text, View, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import Colors from '../common/Colors';
 import images from '../common/Images';
 import * as Font from 'expo-font';
+import ImageContainer from '../component/ImageContainer';
 
 
 
@@ -14,7 +15,7 @@ class DailyActivitySummary extends Component {
             'open-sans-light': require('../assets/fonts/OpenSans-Light.ttf'),
             'open-sans-bold': require('../assets/fonts/OpenSans-Bold.ttf'),
         });
-      //  console.log('loged user is ',LoggedUser.getUser());
+        //  console.log('loged user is ',LoggedUser.getUser());
     }
 
 
@@ -25,10 +26,8 @@ class DailyActivitySummary extends Component {
             //  <TouchableOpacity onPress={this.props.loadDetails}>
             <View style={styles.container}>
                 <View style={styles.imageContainer}>
-                    <Image
-                        source={images[this.props.name]}
-                        style={styles.image}
-                    />
+                    <ImageContainer userName={this.props.name} />
+
                 </View>
                 <View style={styles.textContainer}>
                     <Text style={styles.text}>{this.props.name}</Text>

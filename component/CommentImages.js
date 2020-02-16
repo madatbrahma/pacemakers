@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 
-import { View, Image, StyleSheet, TouchableOpacity } from 'react-native';
-import images from '../common/Images';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import ImageContainer from '../component/ImageContainer';
+
 
 
 class CommentImages extends Component {
@@ -11,7 +12,7 @@ class CommentImages extends Component {
         this.state = {
             allruners: props.allruners,
             runnerInFocus: props.runnerInFocus,
-            setNewRunnerInFocus : props.setNewRunnerInFocus
+            setNewRunnerInFocus: props.setNewRunnerInFocus
         }
     }
 
@@ -21,7 +22,7 @@ class CommentImages extends Component {
         this.setState({
             runnerInFocus: runnerInFocus
         })
-       
+
     }
 
     imageStyle = (runner) => {
@@ -58,10 +59,13 @@ class CommentImages extends Component {
                 {
                     this.state.allruners.map((y) => {
                         return (<TouchableOpacity onPress={() => this.imagePressed(y)}>
-                            <Image style={this.imageStyle(y)}
-                                source={images[y]}
-                                
-                            />
+                            <View style={this.imageStyle(y)}>
+                                <ImageContainer userName={y}
+                                    style={styles.otherImage} />
+
+                            </View>
+
+
                         </TouchableOpacity>
                         );
                     })
@@ -69,27 +73,7 @@ class CommentImages extends Component {
 
 
             </View>
-            /** <View style={styles.imageContainer}>
-                  <TouchableOpacity onPress={()=>this.imagePressed('Brojen')}>
-                      <Image style={this.imageStyle('Brojen')} 
-                          source={images['Brojen']}
-                      />
-                  </TouchableOpacity>
-  
-                  <TouchableOpacity onPress={()=>this.imagePressed('Tilak')}>
-  
-                  <Image style={this.imageStyle('Tilak')} 
-                          source={images['Tilak']}
-                      />
-                  </TouchableOpacity>
-  
-                  <TouchableOpacity onPress={()=>this.imagePressed('Karthik')}>
-  
-                  <Image style={this.imageStyle('Karthik')} 
-                          source={images['Karthik']}
-                      />
-                  </TouchableOpacity>
-              </View> */
+
         );
     }
 }

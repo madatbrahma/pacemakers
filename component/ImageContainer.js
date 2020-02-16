@@ -15,9 +15,9 @@ class ImageContainer extends Component {
     }
 
     componentDidMount() {
-        console.log('props ',this.props);
+       // console.log('get logged in user image of  ',this.props.userName);
         let imageName = this.props.userName+'.png';
-        const storageRef = firebase.storage().ref(imageName);
+        const storageRef = firebase.storage().ref('/profilepics/'+imageName);
         storageRef.getDownloadURL()
             .then(url => {
                 this.setState({
@@ -36,7 +36,7 @@ class ImageContainer extends Component {
             return (
                 <View style={styles.container}>
                     <Image source={{ uri: this.state.imageUrl }}
-                        style={{ width: 100, height: 100,borderRadius:50 }} />
+                        style={[styles.imageStyle ,this.props.style]} />
 
                 </View>
             );
@@ -58,6 +58,10 @@ const styles = StyleSheet.create({
        
        
     },
+
+    imageStyle:{
+        width: 100, height: 100,borderRadius:50 
+    }
 
 })
 

@@ -5,6 +5,8 @@ import moment from "moment";
 
 import db from '../common/db';
 import { UserDailyActivitySummary } from '../common/UseDailyActivitySummary';
+import { LoggedUser } from '../common/LoggedUser';
+
 
 class WeeklySchedule extends Component {
 
@@ -19,6 +21,7 @@ class WeeklySchedule extends Component {
     }
     populateActivitiSummary(snapshotVal) {
         weekTraningsdata = [];
+        const loggedInUser = LoggedUser.getUser();
 
         snapshotVal.map(function (each) {
             let eachdayEntry = JSON.parse(JSON.stringify(each));
@@ -30,7 +33,8 @@ class WeeklySchedule extends Component {
             runnersArrayIs.map(function (runner) {
                 let runnerIs = runner.Name;
                 let woDesc = runner.desc;
-                if (runnerIs === 'Tilak') {
+
+                if (runnerIs === loggedInUser) {
                     let woSumary = new UserDailyActivitySummary(dateIs, dayIs, runnerIs, woDesc);
                     weekTraningsdata.push(woSumary);
                 }
@@ -119,7 +123,7 @@ class WeeklySchedule extends Component {
             return (
 
                 <View >
-                    
+
                     <Text> here</Text>
                 </View>
 

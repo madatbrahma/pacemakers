@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
 import { View, Text, Image, StyleSheet, FlatList } from 'react-native';
-import images from '../common/Images';
 import db from '../common/db';
 import { CommentDetails } from '../common/CommentDetails';
 import EachComment from '../component/EachComment';
@@ -56,9 +55,9 @@ class Comments extends Component {
     }
 
     getCommentsFromDb() {
-        console.log(' in comments component get comments for ', this.state.date, this.state.runner);
-        let date = '2020-01-30';
-        let runner = 'Tilak';
+       // console.log(' in comments component get comments for ', this.state.date, this.state.runner);
+        let date = this.state.date;
+        let runner = this.state.runner;
         var commentsRef = db.ref("/weekly-training/comments/" + date + "/" + runner + "/");
 
         setTimeout(() => {

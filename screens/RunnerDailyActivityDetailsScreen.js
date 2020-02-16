@@ -5,12 +5,13 @@ import images from '../common/Images';
 import db from '../common/db';
 import Comments from '../component/Comments';
 import { LoggedUser } from '../common/LoggedUser';
+import ImageContainer from '../component/ImageContainer';
 import Dialog, { DialogContent, DialogFooter, DialogButton } from 'react-native-popup-dialog';
 
 class RunnerDailyActivityDetailsScreen extends Component {
 
     constructor(props) {
-        console.log(' props.navigation.state.runnerData ', props.navigation.state.params.runnerData);
+        // console.log(' props.navigation.state.runnerData ', props.navigation.state.params.runnerData);
         super(props);
         this.state = {
             runnerdata: props.navigation.state.params.runnerData,
@@ -28,14 +29,14 @@ class RunnerDailyActivityDetailsScreen extends Component {
 
 
     saveComments = () => {
-        console.log('saveComments is called with comments ', this.state.newComments);
-        console.log('logged user2 is', LoggedUser.getUser());
+        //     console.log('saveComments is called with comments ', this.state.newComments);
+        //   console.log('logged user2 is', LoggedUser.getUser());
         const commentFor = this.state.runnerdata.Name;
         const commentBy = LoggedUser.getUser();
         const date = this.state.runnerdata.date;
         //  console.log('comments to save for ', runner, date);
         // var ref = db.ref("weekly-training/comments/");
-        var commentsRef = db.ref("/weekly-training/comments/" + '2020-01-30' + "/" + commentFor + "/");
+        var commentsRef = db.ref("/weekly-training/comments/" + date + "/" + commentFor + "/");
         commentsRef.child(commentBy).set({
 
 
@@ -60,9 +61,8 @@ class RunnerDailyActivityDetailsScreen extends Component {
         return (
             <View style={styles.container}>
                 <View style={styles.imageContainer}>
-                    <Image style={styles.image}
-                        source={images[name]}
-                    />
+                    <ImageContainer userName={name}
+                        style={styles.image} />
 
                     <Text style={styles.text}>{name}</Text>
                     <Text style={styles.text}>{runnerData.desc}</Text>
@@ -120,7 +120,8 @@ class RunnerDailyActivityDetailsScreen extends Component {
 
 
                 <View style={styles.otherComments}>
-                    <Comments runner={name} date={date} reRenderComments={this.state.reRenderComments}/>
+                    <Comments runner={name} date={date}
+                        reRenderComments={this.state.reRenderComments} />
 
                 </View>
             </View>
@@ -143,8 +144,8 @@ const styles = StyleSheet.create({
 
     },
     image: {
-        height: 80,
-        width: 80
+        height: 60,
+        width: 60
     },
     myComments: {
         flex: 1,

@@ -18,6 +18,7 @@ class EachDayWorkoutSummary extends Component {
             <TouchableOpacity onPress={this.props.loadDetails}>
                 <View style={styles.container}>
                     <View style={styles.woImageContainer}>
+                        
                     <Image style={styles.image}
                         source={images[this.props.day]}
                     />
